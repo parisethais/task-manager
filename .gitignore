@@ -1,0 +1,13 @@
+# Virtualenv
+venv/
+.venv/
+
+# PyCharm
+.idea/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Banco local
+db.sqlite3
