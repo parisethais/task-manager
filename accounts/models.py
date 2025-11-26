@@ -8,7 +8,7 @@ class JobTitle(models.Model):
     class Meta:
         ordering = ["name"]
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
 
@@ -25,8 +25,11 @@ class Profile(models.Model):
         blank=True,
         related_name="profiles",
     )
-    phone = models.CharField(max_length=30, blank=True)
-    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    phone = models.CharField(max_length=50, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
 
-    def __str__(self) -> str:
+    class Meta:
+        ordering = ["user__username"]
+
+    def __str__(self):
         return f"Profile of {self.user.username}"

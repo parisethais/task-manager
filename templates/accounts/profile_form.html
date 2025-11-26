@@ -1,118 +1,53 @@
 {% extends "layouts/base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-12 col-lg-8 col-xl-6">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h2 class="h3 mb-1">My profile</h2>
-        <p class="text-muted mb-0">
-          Update your personal info and avatar used across the workspace.
-        </p>
+<div class="d-flex justify-content-center align-items-center"
+     style="min-height: calc(100vh - 120px);">
+  <div class="card shadow-sm border-0" style="max-width: 640px; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h4 mb-1">Edit profile</h1>
+          <p class="text-muted mb-0">
+            Update your personal info used across the workspace.
+          </p>
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle"
+             style="width: 48px; height: 48px; background: #111827; color: #ffffff; font-weight: 600;">
+          {{ request.user.username|slice:":1"|upper }}
+        </div>
       </div>
-    </div>
 
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body">
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
-
-          <!-- Avatar + nome + email -->
-          <div class="d-flex align-items-center mb-4">
-            {% if user.profile.avatar %}
-              <img
-                src="{{ user.profile.avatar.url }}"
-                alt="{{ user.username }}"
-                class="avatar avatar-xl rounded-circle me-3"
-              >
-            {% else %}
-              <div class="avatar avatar-xl avatar-initials rounded-circle me-3">
-                {{ user.get_full_name|default:user.username|first|upper }}
-              </div>
-            {% endif %}
-
-            <div>
-              <h2 class="h5 mb-0">
-                {{ user.get_full_name|default:user.username }}
-              </h2>
-              <p class="text-muted mb-0 small">
-                {{ user.email }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Full name (só leitura) -->
-          <div class="mb-3">
-            <label class="form-label">Full name</label>
-            <input
-              type="text"
-              class="form-control"
-              value="{{ user.get_full_name|default:user.username }}"
-              disabled
-            >
-          </div>
-
-          <!-- Email (só leitura) -->
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              value="{{ user.email }}"
-              disabled
-            >
-          </div>
-
-          <!-- Job title -->
-          <div class="mb-3">
-          <label class="form-label" for="id_job_title">
-            Job title
-          </label>
-
-          {{ form.job_title }}
-
-          {% if form.job_title.errors %}
-            <div class="invalid-feedback d-block">
-              {{ form.job_title.errors }}
-            </div>
-          {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.full_name.label_tag }}
+          {{ form.full_name }}
+          {{ form.full_name.errors }}
         </div>
 
-          <!-- Phone -->
-          <div class="mb-3">
-            {{ form.phone.label_tag }}
-            {{ form.phone }}
-            {{ form.phone.errors }}
-          </div>
+        <div class="mb-3">
+          {{ form.email.label_tag }}
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
 
-          <!-- Avatar (upload) -->
-          <div class="mb-3">
-            {{ form.avatar.label_tag }}
-            {{ form.avatar }}
-            {{ form.avatar.errors }}
-            <div class="form-text">
-              Upload a square image for best results.
-            </div>
-          </div>
+        <div class="mb-4">
+          {{ form.phone.label_tag }}
+          {{ form.phone }}
+          {{ form.phone.errors }}
+        </div>
 
-          <div class="d-flex gap-2">
-            <a href="{% url 'index' %}" class="btn btn-outline-secondary">
-              Cancel
-            </a>
-            <button type="submit" class="btn btn-primary">
-              Save changes
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+            Cancel
+          </a>
+          <button type="submit" class="btn btn-primary">
+            Save changes
+          </button>
+        </div>
+      </form>
     </div>
-
   </div>
 </div>
-{% endblock content %}
+{% endblock %}
