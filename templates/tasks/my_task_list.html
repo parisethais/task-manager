@@ -1,10 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+  <div class="d-flex flex-column flex-md-row align-items-md-center w-100">
+    <form method="get" class="d-flex flex-wrap align-items-center w-100 gap-2">
+      <div class="input-group me-2" style="max-width: 260px;">
+        <span class="input-group-text">
+          <span class="fas fa-search"></span>
+        </span>
+        <input
+          type="text"
+          name="q"
+          class="form-control"
+          placeholder="Search my tasks"
+          value="{{ search_query }}"
+        >
+      </div>
+
+      <div class="me-2">
+        <select name="status" class="form-select">
+          <option value="">All status</option>
+          <option value="open" {% if status_filter == "open" %}selected{% endif %}>Open</option>
+          <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
+        </select>
+      </div>
+
+      <div class="me-2">
+        <select name="priority" class="form-select">
+          <option value="">All priorities</option>
+          <option value="low" {% if priority_filter == "low" %}selected{% endif %}>Low</option>
+          <option value="medium" {% if priority_filter == "medium" %}selected{% endif %}>Medium</option>
+          <option value="high" {% if priority_filter == "high" %}selected{% endif %}>High</option>
+          <option value="urgent" {% if priority_filter == "urgent" %}selected{% endif %}>Urgent</option>
+        </select>
+      </div>
+
+      <button class="btn btn-outline-gray-600 me-2" type="submit">
+        Apply
+      </button>
+
+      {% if search_query or status_filter or priority_filter %}
+        <a href="{% url 'tasks:my-task-list' %}" class="btn btn-link px-2">
+          Clear
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="btn-toolbar mb-2 mb-md-0 ms-md-3">
+    <a href="{% url 'tasks:task-create' %}" class="btn btn-sm btn-primary">
+      + New task
+    </a>
+  </div>
+</div>
+
+<div class="py-4">
+  <h2 class="h4 mb-1">My tasks</h2>
+  <p class="text-muted mb-4">
+    Tasks assigned to you. Track your own workload, priorities and deadlines.
+  </p>
+
+  <div class="row mb-4">
+    <div class="col-12 col-sm-4 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Total assigned to you</h6>
+          <h3 class="mb-0">{{ total_tasks }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-4 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Open</h6>
+          <h3 class="mb-0">{{ open_tasks }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-4 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Completed</h6>
+          <h3 class="mb-0">{{ completed_tasks }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      {% if task_list %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th>Task</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Assignees</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in task_list %}
+                <tr>
+                  <td>
+                    <a href="{% url 'tasks:task-detail' task.pk %}">
+                      {{ task.name }}
+                    </a>
+                  </td>
+                  <td>{{ task.task_type.name }}</td>
+                  <td>
+                    {% if task.priority == "urgent" %}
+                      <span class="badge bg-danger">Urgent</span>
+                    {% elif task.priority == "high" %}
+                      <span class="badge bg-warning text-dark">High</span>
+                    {% elif task.priority == "medium" %}
+                      <span class="badge bg-primary">Medium</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Low</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if task.deadline %}
+                      {{ task.deadline }}
+                    {% else %}
+                      No deadline
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if task.is_completed %}
+                      <span class="badge bg-success">Completed</span>
+                    {% else %}
+                      <span class="badge bg-outline-secondary">Open</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% for user in task.assignees.all %}
+                      {{ user.username }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                  </td>
+                  <td class="text-end">
+                    <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="p-4 text-center text-muted">
+          <p class="mb-1">You have no tasks assigned yet.</p>
+          <p class="mb-0">Create a new task and assign it to yourself or wait for someone to assign you one.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

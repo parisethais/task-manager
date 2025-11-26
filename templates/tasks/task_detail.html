@@ -1,10 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb breadcrumb-dark mb-2">
+        <li class="breadcrumb-item"><a href="{% url 'tasks:task-list' %}">Tasks</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ task.name }}</li>
+      </ol>
+    </nav>
+    <h2 class="h3 mb-1">{{ task.name }}</h2>
+    <p class="text-muted mb-0 d-flex align-items-center gap-2">
+      {{ task.task_type.name }} • Priority
+      <span class="badge badge-priority badge-priority-{{ task.priority }}">
+        {{ task.get_priority_display }}
+      </span>
+    </p>
+  </div>
+  <div class="col-auto">
+    <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-outline-secondary me-2">Edit</a>
+    <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-outline-danger">Delete</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header border-bottom">
+        <h5 class="mb-0">Description</h5>
+      </div>
+      <div class="card-body">
+        {% if task.description %}
+          <p class="mb-0">{{ task.description|linebreaksbr }}</p>
+        {% else %}
+          <p class="text-muted mb-0">No description provided.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header border-bottom">
+        <h5 class="mb-0">Assignees</h5>
+      </div>
+      <div class="card-body">
+        {% for user in task.assignees.all %}
+          <span class="badge bg-soft-primary text-primary me-1 mb-1">
+            {{ user.username }}
+          </span>
+        {% empty %}
+          <p class="text-muted mb-0">Unassigned.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <h6 class="mb-1 text-muted">Status</h6>
+          {% if task.is_completed %}
+            <span class="badge-status badge-status-completed">
+              Completed
+            </span>
+          {% else %}
+            <span class="badge-status badge-status-open">
+              Open
+            </span>
+          {% endif %}
+        </div>
+
+        <div>
+          <form method="post"
+                action="{% url 'tasks:task-toggle-complete' task.pk %}"
+                class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            {% if task.is_completed %}
+              <button type="submit" class="btn btn-sm btn-outline-secondary">
+                Reopen
+              </button>
+            {% else %}
+              <button type="submit" class="btn btn-sm btn-outline-success">
+                Mark done
+              </button>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <h6 class="mb-1">Deadline</h6>
+        {% if task.deadline %}
+          <p class="mb-0">{{ task.deadline|date:"d M Y" }}</p>
+        {% else %}
+          <p class="text-muted mb-0">No deadline set.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <h6 class="mb-1">Priority</h6>
+        <span class="badge-priority badge-priority-{{ task.priority }}">
+          {{ task.get_priority_display }}
+        </span>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h6 class="mb-1">History</h6>
+        <p class="mb-1">
+          Created by:
+          {% if task.created_by %}
+            {{ task.created_by.username }}
+          {% else %}
+            Unknown
+          {% endif %}
+        </p>
+        <p class="mb-1">
+          Created at:
+          {{ task.created_at|date:"Y-m-d H:i" }}
+        </p>
+        <p class="mb-0">
+          Last updated:
+          {{ task.updated_at|date:"Y-m-d H:i" }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
