@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center"
+     style="min-height: calc(100vh - 120px);">
+  <div class="card shadow-sm border-0" style="max-width: 640px; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h4 mb-1">Edit profile</h1>
+          <p class="text-muted mb-0">
+            Update your personal info used across the workspace.
+          </p>
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle"
+             style="width: 48px; height: 48px; background: #111827; color: #ffffff; font-weight: 600;">
+          {{ request.user.username|slice:":1"|upper }}
+        </div>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.full_name.label_tag }}
+          {{ form.full_name }}
+          {{ form.full_name.errors }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.email.label_tag }}
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
+
+        <div class="mb-4">
+          {{ form.phone.label_tag }}
+          {{ form.phone }}
+          {{ form.phone.errors }}
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+            Cancel
+          </a>
+          <button type="submit" class="btn btn-primary">
+            Save changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

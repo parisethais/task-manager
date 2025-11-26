@@ -1,0 +1,69 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    main.content {
+      margin-left: 0 !important;
+    }
+    .content .content-inner {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  </style>
+{% endblock extrastyle %}
+
+{% block nav %}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block header %}{% endblock %}
+{% block theme_settings %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-column justify-content-center align-items-center vh-100">
+    <div class="d-inline-flex align-items-center gap-3 mb-4">
+      <span class="d-inline-flex align-items-center justify-content-center rounded-circle"
+            style="width: 48px; height: 48px; background: #111827;">
+        <img src="{% static 'assets/img/brand/light.svg' %}"
+             alt="Task Manager logo" width="22" height="22">
+      </span>
+      <div class="text-start">
+        <div class="fw-semibold fs-4 mb-0">Task Manager</div>
+        <small class="text-muted d-block" style="margin-top: 2px;">
+          Log in to manage your tasks
+        </small>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm w-100 mb-3" style="max-width: 480px;">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h4 mb-4 text-center">Login</h1>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {{ form.password.errors }}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Log in
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <p class="text-muted small mb-0">
+      © 2025 Task Manager. All rights reserved.
+    </p>
+  </div>
+{% endblock %}

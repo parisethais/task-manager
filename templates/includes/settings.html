@@ -1,0 +1,23 @@
+<a class="dropdown-item d-flex align-items-center"
+   href="{% url 'accounts:profile' %}">
+  <span class="sidebar-icon">
+    <span class="fas fa-user-circle"></span>
+  </span>
+  <span class="sidebar-text">My profile</span>
+</a>
+
+<a class="dropdown-item d-flex align-items-center" href="{% url 'password_change' %}">
+  <span class="sidebar-icon">
+    <span class="fas fa-key"></span>
+  </span>
+  <span class="sidebar-text">Change password</span>
+</a>
+
+<div class="dropdown-divider my-1"></div>
+
+<a class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
+  <span class="sidebar-icon">
+    <span class="fas fa-sign-out-alt"></span>
+  </span>
+  <span class="sidebar-text">Logout</span>
+</a>

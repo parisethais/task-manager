@@ -1,0 +1,191 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+  <div class="d-flex flex-column flex-md-row align-items-md-center w-100">
+    <form method="get"
+          class="d-flex flex-wrap align-items-center w-100 gap-2 task-filters-form">
+
+      <div class="input-group me-2" style="max-width: 260px;">
+        <span class="input-group-text">
+          <span class="fas fa-search"></span>
+        </span>
+        <input
+          type="text"
+          name="q"
+          class="form-control"
+          placeholder="Search my tasks"
+          value="{{ search_query }}"
+        >
+      </div>
+
+      <div class="me-2">
+        <select name="status" class="form-select filter-select">
+          <option value="">All status</option>
+          <option value="open" {% if status_filter == "open" %}selected{% endif %}>Open</option>
+          <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
+        </select>
+      </div>
+
+      <div class="me-2">
+        <select name="priority" class="form-select filter-select">
+          <option value="">All priorities</option>
+          <option value="low" {% if priority_filter == "low" %}selected{% endif %}>Low</option>
+          <option value="medium" {% if priority_filter == "medium" %}selected{% endif %}>Medium</option>
+          <option value="high" {% if priority_filter == "high" %}selected{% endif %}>High</option>
+          <option value="urgent" {% if priority_filter == "urgent" %}selected{% endif %}>Urgent</option>
+        </select>
+      </div>
+
+      <button class="btn btn-outline-gray-600" type="submit">
+        Apply
+      </button>
+
+      {% if search_query or status_filter or priority_filter %}
+        <a href="{% url 'tasks:my-task-list' %}" class="btn btn-link px-2">
+          Clear
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="btn-toolbar mb-2 mb-md-0 ms-md-3">
+    <a href="{% url 'tasks:task-create' %}" class="btn btn-primary btn-new-task">
+      + New task
+    </a>
+  </div>
+</div>
+
+<div class="row stats-row mb-4">
+  <div class="col-12 col-md-4 mb-3 mb-md-0">
+    <div class="card border-0 shadow-sm stats-card">
+      <div class="card-body">
+        <div class="stats-label">Total assigned to you</div>
+        <div class="stats-value">{{ total_tasks }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4 mb-3 mb-md-0">
+    <div class="card border-0 shadow-sm stats-card">
+      <div class="card-body">
+        <div class="stats-label">Open</div>
+        <div class="stats-value">{{ open_tasks }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="card border-0 shadow-sm stats-card">
+      <div class="card-body">
+        <div class="stats-label">Completed</div>
+        <div class="stats-value">{{ completed_tasks }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    {% if task_list %}
+      <div class="table-responsive">
+        <table class="table align-items-center mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Task</th>
+              <th scope="col">Type</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Deadline</th>
+              <th scope="col">Status</th>
+              <th scope="col">Assignees</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in task_list %}
+              <tr>
+                <td>
+                  <a href="{% url 'tasks:task-detail' task.pk %}" class="fw-bold text-dark">
+                    {{ task.name }}
+                  </a>
+                  <div class="text-muted small">
+                    {{ task.description|truncatechars:80 }}
+                  </div>
+                </td>
+                <td>{{ task.task_type.name }}</td>
+                <td>
+                  <span class="badge-priority badge-priority-{{ task.priority }}">
+                    {{ task.get_priority_display }}
+                  </span>
+                </td>
+                <td>
+                  {% if task.deadline %}
+                    {{ task.deadline|date:"d M Y" }}
+                  {% else %}
+                    <span class="text-muted">No deadline</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if task.is_completed %}
+                    <span class="badge-status badge-status-completed">
+                      Completed
+                    </span>
+                  {% else %}
+                    <span class="badge-status badge-status-open">
+                      Open
+                    </span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% for user in task.assignees.all %}
+                    <span class="badge bg-soft-primary text-primary me-1">
+                      {{ user.username }}
+                    </span>
+                  {% empty %}
+                    <span class="text-muted">Unassigned</span>
+                  {% endfor %}
+                </td>
+                <td class="text-end">
+                  <form method="post"
+                        action="{% url 'tasks:task-toggle-complete' task.pk %}"
+                        class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    {% if task.is_completed %}
+                      <button type="submit" class="btn btn-sm btn-outline-secondary">
+                        Reopen
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn btn-sm btn-outline-success">
+                        Mark done
+                      </button>
+                    {% endif %}
+                  </form>
+                  <a href="{% url 'tasks:task-update' task.pk %}" class="btn btn-sm btn-outline-secondary ms-1">
+                    Edit
+                  </a>
+                  <a href="{% url 'tasks:task-delete' task.pk %}" class="btn btn-sm btn-outline-danger ms-1">
+                    Delete
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <div class="mb-3">
+          <span class="icon icon-xl icon-shape rounded-circle bg-soft-primary text-primary">
+            <span class="fas fa-tasks"></span>
+          </span>
+        </div>
+        <h3 class="h4 mb-2">You don’t have any tasks assigned yet</h3>
+        <p class="text-muted mb-0">
+          When someone assigns a task to you, it will appear here so you can track your own workload.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

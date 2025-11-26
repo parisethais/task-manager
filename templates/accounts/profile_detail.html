@@ -1,0 +1,46 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center"
+     style="min-height: calc(100vh - 120px);">
+  <div class="card shadow-sm border-0" style="max-width: 640px; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h4 mb-1">My profile</h1>
+          <p class="text-muted mb-0">
+            Your personal info used across the workspace.
+          </p>
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle"
+             style="width: 48px; height: 48px; background: #111827; color: #ffffff; font-weight: 600;">
+          {{ request.user.username|slice:":1"|upper }}
+        </div>
+      </div>
+
+      <dl class="row mb-4">
+        <dt class="col-sm-3 text-muted">Full name</dt>
+        <dd class="col-sm-9">
+          {{ request.user.get_full_name|default:request.user.username }}
+        </dd>
+
+        <dt class="col-sm-3 text-muted">Email</dt>
+        <dd class="col-sm-9">
+          {{ request.user.email }}
+        </dd>
+
+        <dt class="col-sm-3 text-muted">Phone</dt>
+        <dd class="col-sm-9">
+          {{ profile.phone|default:"—" }}
+        </dd>
+      </dl>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'accounts:profile-edit' %}" class="btn btn-primary">
+          Edit profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
