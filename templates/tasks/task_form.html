@@ -1,48 +1,97 @@
 {% extends "layouts/base.html" %}
 
 {% block content %}
-<div class="py-4">
-  <div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header border-0 pb-0">
-          <h2 class="h4 mb-1">
-            {% if object %}Edit task{% else %}Create task{% endif %}
-          </h2>
-          <p class="mb-0 text-muted">
-            Define the details, assignees and priority for this task.
-          </p>
-        </div>
-        <div class="card-body">
-          <form method="post">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb breadcrumb-dark mb-2">
+        <li class="breadcrumb-item">
+          <a href="{% url 'tasks:task-list' %}">Tasks</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          {% if form.instance.pk %}
+            Edit task
+          {% else %}
+            New task
+          {% endif %}
+        </li>
+      </ol>
+    </nav>
 
-            {% for field in form %}
-              <div class="mb-3">
-                <label class="form-label" for="{{ field.id_for_label }}">
-                  {{ field.label }}
-                </label>
-                {{ field }}
-                {% if field.help_text %}
-                  <small class="form-text text-muted">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                  <div class="text-danger small">{{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endfor %}
+    <h2 class="h3 mb-0">
+      {% if form.instance.pk %}
+        Edit task
+      {% else %}
+        New task
+      {% endif %}
+    </h2>
+    <p class="text-muted mb-0">
+      Fill in the details below to keep your work organized.
+    </p>
+  </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-4">
-              <a href="{% url 'tasks:task-list' %}" class="btn btn-outline-secondary">
-                Cancel
-              </a>
-              <button type="submit" class="btn btn-primary">
-                {% if object %}Save changes{% else %}Create task{% endif %}
-              </button>
+  <div class="col-auto">
+    <a href="{% url 'tasks:task-list' %}" class="btn btn-outline-secondary">
+      Cancel
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header border-bottom">
+        <h5 class="mb-0">Task details</h5>
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
             </div>
-          </form>
-        </div>
+          {% endif %}
+
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label }}
+                {% if field.field.required %}
+                  <span class="text-danger">*</span>
+                {% endif %}
+              </label>
+              {{ field }}
+
+              {% if field.help_text %}
+                <div class="form-text">
+                  {{ field.help_text }}
+                </div>
+              {% endif %}
+
+              {% for error in field.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <a href="{% url 'tasks:task-list' %}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+              {% if form.instance.pk %}
+                Save changes
+              {% else %}
+                Create task
+              {% endif %}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

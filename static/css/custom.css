@@ -44,7 +44,7 @@ main.content .content-inner {
 
 /* ===== Filtros da lista (All status / All priorities) ===== */
 
-.task-filters-form select.filter-select {
+.form-select.filter-select {
   min-width: 200px;
   padding-right: 3rem !important;
   padding-left: 0.9rem;
@@ -65,8 +65,12 @@ main.content .content-inner {
 }
 
 .stats-card .card-body {
-  padding-top: 0.9rem;
-  padding-bottom: 0.9rem;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .stats-label {
