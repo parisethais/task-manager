@@ -148,3 +148,23 @@ button.theme-settings-toggle,
 button#settingsToggle {
   display: none !important;
 }
+
+.avatar.avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background-color: #020617;
+  color: #f9fafb;
+}
+
+.login-logo-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background: #111827;
+}

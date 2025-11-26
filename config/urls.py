@@ -6,7 +6,23 @@ from tasks.views import TaskListView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    path("accounts/", include(("accounts.urls", "accounts"), namespace="accounts")),
     path("tasks/", include(("tasks.urls", "tasks"), namespace="tasks")),
-    path("", TaskListView.as_view(), name="index"),
+
+    path("login/", auth_views.LoginView.as_view(
+        template_name="registration/login.html"
+    ), name="login"),
+
+    path("password-change/", auth_views.PasswordChangeView.as_view(
+        template_name="registration/password_change_form.html",
+    ), name="password_change"),
+
+    path("password-change/done/", auth_views.PasswordChangeDoneView.as_view(
+        template_name="registration/password_change_done.html",
+    ), name="password_change_done"),
+
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+
+    path("", TaskListView.as_view(), name="index"),
 ]
